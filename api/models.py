@@ -8,4 +8,5 @@ class Valores(models.Model):
     value = models.DecimalField(default=0, decimal_places=3, max_digits=150)
     pagar_em = models.DateField()
     parcelas =models.IntegerField(default=1)
+    parcelas_pagas  =models.IntegerField(default=0)
 

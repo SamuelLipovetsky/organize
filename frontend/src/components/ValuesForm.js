@@ -73,7 +73,7 @@ export class ValuesForm extends Component {
                 </div>
                 <br />
                 <div className="input-group-sm">
-                  <label>value </label>
+                  <label>valor total </label>
                   <input
                     type="text"
                     name="value"
@@ -83,7 +83,7 @@ export class ValuesForm extends Component {
                   />
                 </div>
                 <div className="input-group-sm">
-                  <label>pagamento </label>
+                  <label>data primeira parcela </label>
                   <input
                     type="date"
                     name="pagar_em"
@@ -93,7 +93,7 @@ export class ValuesForm extends Component {
                   />
                 </div>
                 <div className="input-group-sm">
-                  <label>parcela </label>
+                  <label> numero parcela </label>
                   <input
                     type="number"
                     name="parcelas"
