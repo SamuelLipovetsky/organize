@@ -1,15 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getValues } from "../actions/ValoresActions";
+import { getValues, delValues, pagarParcelas } from "../actions/ValoresActions";
 
 export class ValueBoard extends Component {
   componentDidMount() {
     this.props.getValues();
   }
-  parcelasRestantes = value => {
-    var parcelasRestantes = value.parcelas - value.parcelas_pagas;
-    return parcelasRestantes + "/" + value.parcelas;
-  };
+  parcelasRestantes = value => {};
   render() {
     return (
       <div>
@@ -25,12 +22,23 @@ export class ValueBoard extends Component {
               </tr>
             </thead>
             {this.props.valores.map(value => (
-              <tbody>
+              <tbody key={value.id}>
                 <tr>
                   <td>{value.title}</td>
                   <td>{value.description}</td>
                   <td>{value.value}</td>
-                  <td>{value.parcelas_pagas + "/" + value.parcelas}</td>
+                  <td>
+                    {value.parcelas_pagas + "/" + value.parcelas}{" "}
+                    <button onClick={() => this.props.pagarParcelas(value)}>
+                      +{" "}
+                    </button>
+                  </td>
+                  <td>{value.pagar_em}</td>
+                  <td>
+                    <button onClick={() => this.props.delValues(value.id)}>
+                      X
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             ))}
@@ -45,5 +53,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getValues }
+  { getValues, delValues, pagarParcelas }
 )(ValueBoard);

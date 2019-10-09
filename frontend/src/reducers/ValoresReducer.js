@@ -1,8 +1,9 @@
+import { ValueBoard } from "../components/ValuesBoard";
+
 const initialState = {
   valores: []
 };
 
-// IMPORTANTE : espaço entre letras=450 ,entre palavras =1050,tempo do ponto =150 da barra 300
 export default function(state = initialState, action, dispatch) {
   switch (action.type) {
     case "GET_VALUES":
@@ -19,6 +20,14 @@ export default function(state = initialState, action, dispatch) {
       return {
         ...state,
         valores: state.valores.filter(ts => ts.id !== action.payload)
+      };
+    case "PAGAR_PARCELAS":
+      return {
+        ...state,
+        valores: [
+          ...state.valores.filter(ts => ts.id !== action.payload.id),
+          action.payload
+        ]
       };
 
     default:

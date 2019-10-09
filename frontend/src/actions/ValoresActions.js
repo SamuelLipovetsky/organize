@@ -9,11 +9,10 @@ export const getValues = () => dispatch => {
   });
 };
 
-export const addValues = tasks => dispatch => {
-  axios.post("/api/cash/", tasks).then(res => {
-    console.log(res.data);
+export const addValues = value => dispatch => {
+  axios.post("/api/cash/", value).then(res => {
     dispatch({
-      type: "ADDVALUES",
+      type: "ADD_VALUES",
       payload: res.data
     });
   });
@@ -25,8 +24,20 @@ export const delValues = id => dispatch => {
 
     .then(res => {
       dispatch({
-        type: "DELETEVALUES",
+        type: "DELETE_VALUES",
         payload: id
       });
     });
+};
+
+export const pagarParcelas = value => dispatch => {
+  if (value.parcelas_pagas < value.parcelas) {
+    value.parcelas_pagas += 1;
+  }
+  axios.put(`/api/cash/${value.id}/`, value).then(res => {
+    dispatch({
+      type: "PAGAR_PARCELAS",
+      payload: value
+    });
+  });
 };

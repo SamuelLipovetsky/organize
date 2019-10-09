@@ -4,14 +4,15 @@ import { Provider } from "react-redux";
 import store from "../store";
 import ValuesBoard from "./ValuesBoard.js";
 import ValuesForm from "./ValuesForm.js";
+import Graphs from "./Graphs";
 export class App extends Component {
   render() {
     return (
       <div>
         <Provider store={store}>
-          <p>hello word</p>
           <ValuesBoard></ValuesBoard>
           <ValuesForm></ValuesForm>
+          <Graphs></Graphs>
         </Provider>
       </div>
     );
