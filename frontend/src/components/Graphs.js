@@ -8,32 +8,56 @@ import {
   YAxis,
   LineChart
 } from "react-timeseries-charts";
-
+import { TimeSeries, TimeRange } from "pondjs";
+import ValueList from "react-timeseries-charts/lib/components/ValueList";
 export class Graph extends Component {
   state = {
     mes: "",
     ano: 2019,
-    lista: []
+    lista: {
+      name: "dispesas",
+      columns: ["time", "value"],
+      points: []
+    },
+    // this "ganho" in the state is just a fixed value, but when the user is  implemented
+    // this value will also be a variable depending on the user atribute
+    ganho: 10000,
+    restante: 10000
   };
   componentDidMount() {
     this.props.getValues();
   }
   onSubmit = e => {
+    this.setState({ mes: e.target.mes.value });
+    this.setState({ ano: e.target.ano.value });
+    this.setState({ restante: 10000 });
     e.preventDefault();
+
     this.setState({
-      // como saber se o mes escolhido esta antes ou depous do ano
-      lista: this.props.valores.filter(value => {
-        var data = new Date(value.pagar_em);
-        var mes = Number(data.getMonth()) 
-        var diferença_anos = (data.getFullYear() - this.state.ano-1) * 12;
-        console.log(tempo, diferença_anos, value.parcelas);
-        if (diferença_anos>=0 && ) {
-          console.log(value);
-          return value;
-        }
-      })
+      // this setState filters all the "Valores" and
+      // apend them to a list ,called "lista", in the state of this component
+      //the state is kinda of arranjed like a timeseries just to be faster later on when ploting the graph
+      lista: {
+        name: "dispesas",
+        columns: ["time", "value"],
+
+        points: this.props.valores.map(value => {
+          var data = new Date(value.pagar_em);
+          var mes = Number(data.getMonth());
+          var ano = Number(data.getFullYear());
+          var control =
+            Number(this.state.mes) +
+            12 * Number(this.state.ano) -
+            (mes + 12 * ano);
+
+          if (control <= value.parcelas && control > 0) {
+            this.setState({ restante: (this.state.restante -= value.value) });
+            return [value.pagar_em, this.state.restante];
+          }
+        })
+      }
     });
-    console.log(this.state.lista);
+    console.log(this.state.lista.points);
   };
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -74,9 +98,13 @@ export class Graph extends Component {
         </form>
         <p>{this.state.mes}</p>
         <p>{this.state.ano}</p>
-        {this.state.lista.map(value => {
-          <p>{value}</p>;
-        })}
+        <div>
+          {this.state.lista.points.map(value => (
+            <div>
+              <p>{value}</p>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
