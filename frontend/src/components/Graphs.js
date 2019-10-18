@@ -31,8 +31,22 @@ export class Graph extends Component {
     this.setState({ mes: e.target.mes.value });
     this.setState({ ano: e.target.ano.value });
     this.setState({ restante: 10000 });
-    e.preventDefault();
 
+    e.preventDefault();
+    var pts = [];
+    var pontos = this.props.valores.map(value => {
+      var data = new Date(value.pagar_em);
+      var mes = Number(data.getMonth());
+      var ano = Number(data.getFullYear());
+      var control =
+        Number(this.state.mes) + 12 * Number(this.state.ano) - (mes + 12 * ano);
+
+      if (control <= value.parcelas && control > 0) {
+        this.setState({ restante: (this.state.restante -= value.value) });
+
+        pts.push([data.getTime(), this.state.restante]);
+      }
+    });
     this.setState({
       // this setState filters all the "Valores" and
       // apend them to a list ,called "lista", in the state of this component
@@ -41,20 +55,7 @@ export class Graph extends Component {
         name: "dispesas",
         columns: ["time", "value"],
 
-        points: this.props.valores.map(value => {
-          var data = new Date(value.pagar_em);
-          var mes = Number(data.getMonth());
-          var ano = Number(data.getFullYear());
-          var control =
-            Number(this.state.mes) +
-            12 * Number(this.state.ano) -
-            (mes + 12 * ano);
-
-          if (control <= value.parcelas && control > 0) {
-            this.setState({ restante: (this.state.restante -= value.value) });
-            return [value.pagar_em, this.state.restante];
-          }
-        })
+        points: pts
       }
     });
     console.log(this.state.lista.points);
@@ -62,6 +63,7 @@ export class Graph extends Component {
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
   render() {
     return (
       <div>
@@ -99,11 +101,41 @@ export class Graph extends Component {
         <p>{this.state.mes}</p>
         <p>{this.state.ano}</p>
         <div>
-          {this.state.lista.points.map(value => (
+          {/* {this.state.lista.points.map(value => (
             <div>
-              <p>{value}</p>
+              <p>{value.}</p>
             </div>
-          ))}
+          ))} */}
+        </div>
+        <div>
+          <ChartContainer
+            timeRange={
+              new TimeRange([
+                new Date(this.state.ano, this.state.mes - 1, 0, 0, 0, 0),
+                Number(
+                  new Date(this.state.ano, this.state.mes - 1, 0, 0, 0, 0)
+                ) + 2592000000
+              ])
+            }
+          >
+            <ChartRow height="200">
+              <YAxis
+                id="axis1"
+                label="R$"
+                min={0}
+                max={this.state.ganho}
+                width="60"
+                type="linear"
+                format="$,.2f"
+              />
+              <Charts>
+                <LineChart
+                  axis="axis1"
+                  series={new TimeSeries(this.state.lista)}
+                />
+              </Charts>
+            </ChartRow>
+          </ChartContainer>
         </div>
       </div>
     );
