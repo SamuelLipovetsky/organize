@@ -21,12 +21,18 @@ export class Graph extends Component {
     },
     // this "ganho" in the state is just a fixed value, but when the user is  implemented
     // this value will also be a variable depending on the user atribute
-    ganho: 10000,
-    restante: 10000
+    ganho: 10000
+    // restante: 10000
   };
   componentDidMount() {
     this.props.getValues();
   }
+
+  Comparator = (a, b) => {
+    if (a[1] < b[1]) return -1;
+    if (a[1] > b[1]) return 1;
+    return 0;
+  };
   onSubmit = e => {
     this.setState({ mes: e.target.mes.value });
     this.setState({ ano: e.target.ano.value });
@@ -42,23 +48,35 @@ export class Graph extends Component {
         Number(this.state.mes) + 12 * Number(this.state.ano) - (mes + 12 * ano);
 
       if (control <= value.parcelas && control > 0) {
-        this.setState({ restante: (this.state.restante -= value.value) });
-
-        pts.push([data.getTime(), this.state.restante]);
+        // this.setState({ restante: (this.state.restante -= value.value) });
+        var parcelas = 0;
+        for (var i = 1; i < value.parcelas; i++) {
+          parcelas += 2592000000;
+          pts.push([Number(data.getTime()) + parcelas, value.value]);
+        }
+        pts.push([data.getTime(), value.value, ""]);
       }
     });
+
+    var all_points = [];
+    console.log(pts);
+    pts = pts.sort((a, b) => {
+      return a[0] > b[0] ? 1 : -1;
+    });
+
+    pts = pts.map(point => {});
+    console.log(pts);
     this.setState({
       // this setState filters all the "Valores" and
       // apend them to a list ,called "lista", in the state of this component
       //the state is kinda of arranjed like a timeseries just to be faster later on when ploting the graph
       lista: {
         name: "dispesas",
-        columns: ["time", "value"],
+        columns: ["time", "value", "restante"],
 
         points: pts
       }
     });
-    console.log(this.state.lista.points);
   };
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -112,9 +130,7 @@ export class Graph extends Component {
             timeRange={
               new TimeRange([
                 new Date(this.state.ano, this.state.mes - 1, 0, 0, 0, 0),
-                Number(
-                  new Date(this.state.ano, this.state.mes - 1, 0, 0, 0, 0)
-                ) + 2592000000
+                Number(new Date(this.state.ano, this.state.mes, 0, 0, 0, 0))
               ])
             }
           >
